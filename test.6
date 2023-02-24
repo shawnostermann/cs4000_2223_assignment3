@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# students must NOT change this file in any way!!!
+PATH=/bin:/usr/bin
+
+BASE=webb
+SHRINK=8
+NUMTHREADS=4
+
+echo "Running: ./sharpen ${BASE}.png ${NUMTHREADS} ${SHRINK}"
+
+rm -f smaller.png sharper.png
+touch smaller.png sharper.png
+time ./sharpen ${BASE}.png ${NUMTHREADS} ${SHRINK}
+mv smaller.png ${BASE}.mine.smaller.${NUMTHREADS}.${SHRINK}.png
+mv sharper.png ${BASE}.mine.sharper.${NUMTHREADS}.${SHRINK}.png
+
+if cmp -s ${BASE}.mine.sharper.${NUMTHREADS}.${SHRINK}.png ${BASE}.correct.sharper.${NUMTHREADS}.${SHRINK}.png; then
+    echo "PASSES - ${BASE}.mine.sharper.${NUMTHREADS}.${SHRINK}.png"; 
+else
+    echo "FAILS  - ${BASE}.mine.sharper.${NUMTHREADS}.${SHRINK}.png"; 
+    FAILS=sharper
+fi
+
+if cmp -s ${BASE}.mine.smaller.${NUMTHREADS}.${SHRINK}.png ${BASE}.correct.smaller.${NUMTHREADS}.${SHRINK}.png; then
+    echo "PASSES - ${BASE}.mine.smaller.${NUMTHREADS}.${SHRINK}.png"; 
+else
+    echo "FAILS  - ${BASE}.mine.smaller.${NUMTHREADS}.${SHRINK}.png"; 
+    FAILS=smaller
+fi
+
+if [[ -z ${FAILS} ]]; then
+    echo "PASSES"; 
+    exit 0
+else
+    echo "FAILS"; 
+    exit 99
+fi
