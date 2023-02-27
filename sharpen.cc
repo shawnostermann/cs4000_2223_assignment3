@@ -123,6 +123,7 @@ void Image_sharpen(Image *img_orig, Image *img_sharper, Image *img_smaller, int 
     Image_create(img_smaller, img_orig->width/shrink, img_orig->height/shrink, img_orig->channels, false);
     ON_ERROR_EXIT(img_smaller->data == NULL, "Error in creating the image");
 
+    fprintf(stderr,"Sharpening image...\n");
 
     // use the matrix to create a sharper copy of the original image
     // this part, at least, will need to be parallelized
@@ -140,10 +141,12 @@ void Image_sharpen(Image *img_orig, Image *img_sharper, Image *img_smaller, int 
         }
     }
 
+    fprintf(stderr,"Shrinking image...\n");
+
     // shrink the image
     // This part could start before the sharpening finishes, but be careful
-    for (int column=1; column < (img_orig->width/shrink); ++column) {
-        for (int row=1; row < (img_orig->height/shrink); ++row) {
+    for (int column=0; column < (img_orig->width/shrink); ++column) {
+        for (int row=0; row < (img_orig->height/shrink); ++row) {
             Average_pixels(img_sharper, img_smaller, shrink, column, row);
         }
     }
@@ -185,7 +188,7 @@ int main(int argc, char *argv[])
     ON_ERROR_EXIT(!(img_infile.allocation_ != NO_ALLOCATION && img_infile.channels == 3), "The input image must have exactly 3 channels.");
     
     // Converting the image
-    fprintf(stderr,"Sharpening image...\n");
+    fprintf(stderr,"Altering image...\n");
     Image_sharpen(&img_infile, &img_sharper, &img_smaller, numthreads, shrink);
 
     // Save image
